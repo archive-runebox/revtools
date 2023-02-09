@@ -186,7 +186,7 @@ object Deobfuscator {
       }
       cls.fields.forEach { field ->
          if(field.origOwner != null) {
-            str.append("${field.identifier}:${field.origOwner}")
+            str.append("${field.identifier}:${field.origOwner}\n")
          }
       }
       origOwnerMapBytes = str.toString().toByteArray()
