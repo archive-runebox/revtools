@@ -344,7 +344,7 @@ public class ClassifierUtil {
 							implB.getOwner(), implB.getName(), implB.getDesc(), Util.isCallToInterface(implB),
 							env) ? COMPARED_SIMILAR : COMPARED_DISTINCT;
 				default:
-					Logger.INSTANCE.info("unexpected impl tag: "+implA.getTag());
+					Logger.INSTANCE.debug("unexpected impl tag: "+implA.getTag());
 				}
 			} else if (!Util.isIrrelevantBsm(a.bsm)) {
 				System.out.printf("unknown invokedynamic bsm: %s/%s%s (tag=%d iif=%b)%n", a.bsm.getOwner(), a.bsm.getName(), a.bsm.getDesc(), a.bsm.getTag(), a.bsm.isInterface());
@@ -592,7 +592,7 @@ public class ClassifierUtil {
 				System.out.printf("%2d ", v[i + j * size]);
 			}
 
-			Logger.INSTANCE.info();
+			Logger.INSTANCE.debug();
 		}*/
 
 		int i = sizeA;
