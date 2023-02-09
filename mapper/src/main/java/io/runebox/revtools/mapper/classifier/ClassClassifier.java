@@ -1,6 +1,5 @@
 package io.runebox.revtools.mapper.classifier;
 
-import io.runebox.revtools.mapper.Main;
 import io.runebox.revtools.mapper.Mapper;
 import io.runebox.revtools.mapper.Util;
 import io.runebox.revtools.mapper.type.*;

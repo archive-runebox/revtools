@@ -39,6 +39,7 @@ class StaticNodeConsolidator : Transformer {
             val exceptions = Iterables.toArray(method.exceptions, String::class.java)
             val copy = MethodNode(method.access, method.name, method.desc, method.signature, exceptions)
             method.accept(copy)
+            copy.owner = staticsCls
             copy.origOwner = method.owner.name
             staticsCls.methods.add(copy)
             movedMethods.add(method)
@@ -73,6 +74,7 @@ class StaticNodeConsolidator : Transformer {
 
         staticFields.forEach { field ->
             val copy = FieldNode(ASM9, field.access, field.name, field.desc, null, field.value)
+            copy.owner = staticsCls
             copy.origOwner = field.owner.name
             staticsCls.fields.add(copy)
             movedFields.add(field)
