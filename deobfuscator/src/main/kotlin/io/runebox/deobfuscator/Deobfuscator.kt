@@ -15,12 +15,14 @@ object Deobfuscator {
    private lateinit var inputFile: File
    private lateinit var outputFile: File
    private var runTestClient = false
+   private var consolidateStatics = false
 
    private val pool = ClassPool()
    private val transformers = mutableListOf<Transformer>()
 
    private lateinit var obfNameMapBytes: ByteArray
    private lateinit var nameIdxMapBytes: ByteArray
+   private lateinit var origOwnerMapBytes: ByteArray
 
    /**
     * == BYTECODE TRANSFORMER REGISTRATION ==
@@ -51,7 +53,11 @@ object Deobfuscator {
       register<MultiplierRemover>()
       register<StackFrameFixer>()
       register<DecompilerTrapFixer>()
-      register<StaticNodeConsolidator>()
+
+      /*
+       * Optional bytecode transformers via CLI flags.
+       */
+      if(consolidateStatics) register<StaticNodeConsolidator>()
    }
 
    @JvmStatic
@@ -60,11 +66,13 @@ object Deobfuscator {
 
       val inputFile = File(args[0])
       val outputFile = File(args[1])
-      val runTestClient = args.size == 3 && args[2] == "-t"
+      val runTestClient = args.size >= 3 && args[2] == "-t"
+      val consolidateStatics = args.size >= 3 && args.drop(2).any { it in listOf("-s", "--statics-consolidation") }
 
       this.inputFile = inputFile
       this.outputFile = outputFile
       this.runTestClient = runTestClient
+      this.consolidateStatics = consolidateStatics
 
       this.init()
       this.run()
@@ -125,6 +133,12 @@ object Deobfuscator {
          jos.putNextEntry(JarEntry("obf.map"))
          jos.write(obfNameMapBytes)
          jos.closeEntry()
+
+         if(consolidateStatics) {
+            jos.putNextEntry(JarEntry("static.map"))
+            jos.write(origOwnerMapBytes)
+            jos.closeEntry()
+         }
       }
 
       Logger.info("Successfully saved ${pool.allClasses.size} to jar file.")
@@ -160,6 +174,22 @@ object Deobfuscator {
          }
       }
       obfNameMapBytes = str.toString().toByteArray()
+   }
+
+   internal fun ClassPool.encodeOrigOwnerMap() {
+      val str = StringBuilder()
+      val cls = getClass("Statics")!!
+      cls.methods.forEach { method ->
+         if(method.origOwner != null) {
+            str.append("${method.identifier}:${method.origOwner}\n")
+         }
+      }
+      cls.fields.forEach { field ->
+         if(field.origOwner != null) {
+            str.append("${field.identifier}:${field.origOwner}")
+         }
+      }
+      origOwnerMapBytes = str.toString().toByteArray()
    }
 
    @DslMarker

@@ -3,10 +3,12 @@ package io.runebox.deobfuscator.asm
 import io.runebox.asm.tree.owner
 import io.runebox.asm.tree.pool
 import io.runebox.asm.util.field
+import io.runebox.asm.util.nullField
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes.ASM9
 import org.objectweb.asm.tree.MethodNode
 
+var MethodNode.origOwner: String? by nullField()
 var MethodNode.obfName: String by field()
 var MethodNode.obfDesc: String by field()
 
