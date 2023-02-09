@@ -1,6 +1,5 @@
 package io.runebox.revtools.mapper.classifier;
 
-import io.runebox.revtools.mapper.Main;
 import io.runebox.revtools.mapper.Mapper;
 import io.runebox.revtools.mapper.Util;
 import io.runebox.revtools.mapper.type.*;
@@ -405,7 +404,7 @@ public class ClassClassifier {
 		@Override
 		public double getScore(ClassInstance clsA, ClassInstance clsB, ClassEnvironment env) {
 			/*if (clsA.getName().equals("agl") && clsB.getName().equals("aht")) {
-				Logger.INSTANCE.info();
+				Logger.INSTANCE.debug();
 			}*/
 
 			final double absThreshold = 0.8;

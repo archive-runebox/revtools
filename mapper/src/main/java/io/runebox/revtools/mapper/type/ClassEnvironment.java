@@ -12,6 +12,8 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
@@ -79,6 +81,19 @@ public final class ClassEnvironment implements ClassEnv {
 
 			FileSystem fs = Util.iterateJar(archive, false, file -> {
 				String name = file.toAbsolutePath().toString();
+				if(name.equals("statics.map")) {
+					try {
+						FileInputStream fis = new FileInputStream(file.toFile());
+						byte[] data = new byte[(int)file.toFile().length()];
+						fis.read(data);
+						fis.close();
+						setOrigOwnerMapBytes(data);
+					} catch (FileNotFoundException e) {
+						throw new RuntimeException(e);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				}
 				if (!name.startsWith("/") || !name.endsWith(".class") || name.startsWith("//")) throw new RuntimeException("invalid path: "+archive+" ("+name+")");
 				name = name.substring(1, name.length() - ".class".length());
 
@@ -566,6 +581,10 @@ public final class ClassEnvironment implements ClassEnv {
 		}
 	}
 
+	private void setOrigOwnerMapBytes(byte[] data) {
+		this.origOwnerMapBytes = data;
+	}
+
 	private static void addOuterClass(ClassInstance cls, String name, boolean createUnknown) {
 		ClassInstance outerClass = cls.getEnv().getLocalClsByName(name);
 
@@ -605,6 +624,7 @@ public final class ClassEnvironment implements ClassEnv {
 	private final Map<String, ClassInstance> sharedClasses = new HashMap<>();
 	private final List<FileSystem> openFileSystems = new ArrayList<>();
 	private final Map<String, Path> classPathIndex = new HashMap<>();
+	private byte[] origOwnerMapBytes = null;
 	private final ClassFeatureExtractor extractorA = new ClassFeatureExtractor(this);
 	private final ClassFeatureExtractor extractorB = new ClassFeatureExtractor(this);
 	private final MatchingCache cache = new MatchingCache();

@@ -2,7 +2,9 @@ package io.runebox.deobfuscator.transformer
 
 import com.google.common.collect.Iterables
 import io.runebox.asm.tree.*
+import io.runebox.deobfuscator.Deobfuscator.encodeOrigOwnerMap
 import io.runebox.deobfuscator.Transformer
+import io.runebox.deobfuscator.asm.origOwner
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldInsnNode
@@ -26,6 +28,7 @@ class StaticNodeConsolidator : Transformer {
 
         this.moveStaticMethods(pool)
         this.moveStaticFields(pool)
+        pool.encodeOrigOwnerMap()
     }
 
     private fun moveStaticMethods(pool: ClassPool) {
@@ -36,6 +39,8 @@ class StaticNodeConsolidator : Transformer {
             val exceptions = Iterables.toArray(method.exceptions, String::class.java)
             val copy = MethodNode(method.access, method.name, method.desc, method.signature, exceptions)
             method.accept(copy)
+            copy.owner = staticsCls
+            copy.origOwner = method.owner.name
             staticsCls.methods.add(copy)
             movedMethods.add(method)
             methodCount++
@@ -69,6 +74,8 @@ class StaticNodeConsolidator : Transformer {
 
         staticFields.forEach { field ->
             val copy = FieldNode(ASM9, field.access, field.name, field.desc, null, field.value)
+            copy.owner = staticsCls
+            copy.origOwner = field.owner.name
             staticsCls.fields.add(copy)
             movedFields.add(field)
             fieldCount++

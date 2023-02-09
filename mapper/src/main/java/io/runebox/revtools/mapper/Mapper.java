@@ -143,7 +143,7 @@ public class Mapper {
 		if (a.getArrayDimensions() != b.getArrayDimensions()) throw new IllegalArgumentException("the classes don't have the same amount of array dimensions");
 		if (a.getMatch() == b) return;
 
-		Logger.INSTANCE.info("match class "+a+" -> "+b+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
+		Logger.INSTANCE.debug("match class "+a+" -> "+b+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
 
 		if (a.getMatch() != null) {
 			a.getMatch().setMatch(null);
@@ -270,7 +270,7 @@ public class Mapper {
 		if (a.getCls().getMatch() != b.getCls()) throw new IllegalArgumentException("the methods don't belong to the same class");
 		if (a.getMatch() == b) return;
 
-		Logger.INSTANCE.info("match method "+a+" -> "+b+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
+		Logger.INSTANCE.debug("match method "+a+" -> "+b+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
 
 		Set<MethodInstance> membersA = a.getAllHierarchyMembers();
 		Set<MethodInstance> membersB = b.getAllHierarchyMembers();
@@ -339,7 +339,7 @@ public class Mapper {
 		if (a.getCls().getMatch() != b.getCls()) throw new IllegalArgumentException("the methods don't belong to the same class");
 		if (a.getMatch() == b) return;
 
-		Logger.INSTANCE.info("match field "+a+" -> "+b+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
+		Logger.INSTANCE.debug("match field "+a+" -> "+b+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
 
 		if (a.getMatch() != null) a.getMatch().setMatch(null);
 		if (b.getMatch() != null) b.getMatch().setMatch(null);
@@ -357,7 +357,7 @@ public class Mapper {
 		if (a.isArg() != b.isArg()) throw new IllegalArgumentException("the method vars are not of the same kind");
 		if (a.getMatch() == b) return;
 
-		Logger.INSTANCE.info("match method arg "+a+" -> "+b+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
+		Logger.INSTANCE.debug("match method arg "+a+" -> "+b+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
 
 		if (a.getMatch() != null) a.getMatch().setMatch(null);
 		if (b.getMatch() != null) b.getMatch().setMatch(null);
@@ -372,7 +372,7 @@ public class Mapper {
 		if (cls == null) throw new NullPointerException("null class");
 		if (cls.getMatch() == null) return;
 
-		Logger.INSTANCE.info("unmatch class "+cls+" (was "+cls.getMatch()+")"+(cls.hasMappedName() ? " ("+cls.getName(NameType.MAPPED_PLAIN)+")" : ""));
+		Logger.INSTANCE.debug("unmatch class "+cls+" (was "+cls.getMatch()+")"+(cls.hasMappedName() ? " ("+cls.getName(NameType.MAPPED_PLAIN)+")" : ""));
 
 		cls.getMatch().setMatch(null);
 		cls.setMatch(null);
@@ -394,7 +394,7 @@ public class Mapper {
 		if (m == null) throw new NullPointerException("null member");
 		if (m.getMatch() == null) return;
 
-		Logger.INSTANCE.info("unmatch member "+m+" (was "+m.getMatch()+")"+(m.hasMappedName() ? " ("+m.getName(NameType.MAPPED_PLAIN)+")" : ""));
+		Logger.INSTANCE.debug("unmatch member "+m+" (was "+m.getMatch()+")"+(m.hasMappedName() ? " ("+m.getName(NameType.MAPPED_PLAIN)+")" : ""));
 
 		if (m instanceof MethodInstance) {
 			for (MethodVarInstance arg : ((MethodInstance) m).getArgs()) {
@@ -422,7 +422,7 @@ public class Mapper {
 		if (a == null) throw new NullPointerException("null method var");
 		if (a.getMatch() == null) return;
 
-		Logger.INSTANCE.info("unmatch method var "+a+" (was "+a.getMatch()+")"+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
+		Logger.INSTANCE.debug("unmatch method var "+a+" (was "+a.getMatch()+")"+(a.hasMappedName() ? " ("+a.getName(NameType.MAPPED_PLAIN)+")" : ""));
 
 		a.getMatch().setMatch(null);
 		a.setMatch(null);
@@ -470,6 +470,7 @@ public class Mapper {
 	}
 
 	public boolean autoMatchClasses(ClassifierLevel level, double absThreshold, double relThreshold, DoubleConsumer progressReceiver) {
+		Logger.INSTANCE.info("Mapping classes...");
 		boolean assumeBothOrNoneObfuscated = env.assumeBothOrNoneObfuscated;
 		Predicate<ClassInstance> filter = cls -> cls.isReal() && (!assumeBothOrNoneObfuscated || cls.isNameObfuscated()) && !cls.hasMatch() && cls.isMatchable();
 
@@ -501,8 +502,9 @@ public class Mapper {
 			match(entry.getKey(), entry.getValue());
 		}
 
-		Logger.INSTANCE.info("Auto matched "+matches.size()+" classes ("+(classes.size() - matches.size())+" unmatched, "+env.getClassesA().size()+" total)");
+		Logger.INSTANCE.debug("Auto matched "+matches.size()+" classes ("+(classes.size() - matches.size())+" unmatched, "+env.getClassesA().size()+" total)");
 
+		Logger.INSTANCE.info("Mapped " + matches.size() + " classes.");
 		return !matches.isEmpty();
 	}
 
@@ -538,6 +540,7 @@ public class Mapper {
 	}
 
 	public boolean autoMatchMethods(ClassifierLevel level, double absThreshold, double relThreshold, DoubleConsumer progressReceiver) {
+		Logger.INSTANCE.info("Mapping methods...");
 		AtomicInteger totalUnmatched = new AtomicInteger();
 		Map<MethodInstance, MethodInstance> matches = match(level, absThreshold, relThreshold,
 				cls -> cls.getMemberMethods(), MethodClassifier::rank, MethodClassifier.getMaxScore(level),
@@ -547,8 +550,9 @@ public class Mapper {
 			match(entry.getKey(), entry.getValue());
 		}
 
-		Logger.INSTANCE.info("Auto matched "+matches.size()+" methods ("+totalUnmatched.get()+" unmatched)");
+		Logger.INSTANCE.debug("Auto matched "+matches.size()+" methods ("+totalUnmatched.get()+" unmatched)");
 
+		Logger.INSTANCE.info("Mapped " + matches.size() + " methods.");
 		return !matches.isEmpty();
 	}
 
@@ -562,7 +566,7 @@ public class Mapper {
 			match(entry.getKey(), entry.getValue());
 		}
 
-		Logger.INSTANCE.info("Auto matched "+matches.size()+" methods ("+totalUnmatched.get()+" unmatched)");
+		Logger.INSTANCE.debug("Auto matched "+matches.size()+" methods ("+totalUnmatched.get()+" unmatched)");
 
 		return !matches.isEmpty();
 	}
@@ -572,6 +576,7 @@ public class Mapper {
 	}
 
 	public boolean autoMatchFields(ClassifierLevel level, double absThreshold, double relThreshold, DoubleConsumer progressReceiver) {
+		Logger.INSTANCE.info("Mapping fields...");
 		AtomicInteger totalUnmatched = new AtomicInteger();
 		double maxScore = FieldClassifier.getMaxScore(level);
 
@@ -583,8 +588,9 @@ public class Mapper {
 			match(entry.getKey(), entry.getValue());
 		}
 
-		Logger.INSTANCE.info("Auto matched "+matches.size()+" fields ("+totalUnmatched.get()+" unmatched)");
+		Logger.INSTANCE.debug("Auto matched "+matches.size()+" fields ("+totalUnmatched.get()+" unmatched)");
 
+		Logger.INSTANCE.info("Mapped " + matches.size() + " fields.");
 		return !matches.isEmpty();
 	}
 
@@ -649,6 +655,7 @@ public class Mapper {
 
 	private boolean autoMatchMethodVars(boolean isArg, Function<MethodInstance, MethodVarInstance[]> supplier,
 			ClassifierLevel level, double absThreshold, double relThreshold, DoubleConsumer progressReceiver) {
+		Logger.INSTANCE.info("Mapping method arguments.");
 		List<MethodInstance> methods = env.getClassesA().stream()
 				.filter(cls -> cls.isReal() && cls.hasMatch() && cls.getMethods().length > 0)
 				.flatMap(cls -> Stream.<MethodInstance>of(cls.getMethods()))
@@ -698,8 +705,9 @@ public class Mapper {
 			match(entry.getKey(), entry.getValue());
 		}
 
-		Logger.INSTANCE.info("Auto matched "+matches.size()+" method "+(isArg ? "arg" : "var")+"s ("+totalUnmatched.get()+" unmatched)");
+		Logger.INSTANCE.debug("Auto matched "+matches.size()+" method "+(isArg ? "arg" : "var")+"s ("+totalUnmatched.get()+" unmatched)");
 
+		Logger.INSTANCE.info("Mapped " + matches.size() + " method arguments.");
 		return !matches.isEmpty();
 	}
 
@@ -810,7 +818,7 @@ public class Mapper {
 	}
 
 
-	void setMatch(ClassInstance clsA, ClassInstance clsB, MemberInstance<?> memberA, MemberInstance<?> memberB, MethodVarInstance varA, MethodVarInstance varB) {
+	public void doMatch(ClassInstance clsA, ClassInstance clsB, MemberInstance<?> memberA, MemberInstance<?> memberB, MethodVarInstance varA, MethodVarInstance varB) {
 		if (canMatchClasses(clsA, clsB)) {
 			match(clsA, clsB);
 			return;
@@ -847,7 +855,7 @@ public class Mapper {
 		return false;
 	}
 
-	void matchPerfectMembers(ClassInstance cls) {
+	public void matchPerfectMembers(ClassInstance cls) {
 		ClassInstance clsA = cls;
 
 		if (!canMatchPerfectMembers(clsA)) return;
@@ -863,7 +871,8 @@ public class Mapper {
 
 			List<RankResult<MethodInstance>> results = MethodClassifier.rank(m, clsB.getMethods(), ClassifierLevel.Full, getEnv());
 
-			if (!results.isEmpty() && results.get(0).getScore() >= minMethodScore && (results.size() == 1 || results.get(1).getScore() < minMethodScore)) {
+			//if (!results.isEmpty() && results.get(0).getScore() >= minMethodScore && (results.size() == 1 || results.get(1).getScore() < minMethodScore)) {
+			if (!results.isEmpty() && results.get(0).getScore() >= minMethodScore && (results.size() == 1 || results.get(1).getScore() < results.get(0).getScore())) {
 				MethodInstance match = results.get(0).getSubject();
 				MethodInstance prev = matchedMethods.putIfAbsent(match, m);
 				if (prev != null) matchedMethods.put(match, null);

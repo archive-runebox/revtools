@@ -58,7 +58,7 @@ public class Util {
 			Files.walkFileTree(fs.getPath("/"), new SimpleFileVisitor<Path>() {
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					if (file.toString().endsWith(".class")) {
+					if (file.toString().endsWith(".class") || file.toString().equals("statics.map")) {
 						handler.accept(file);
 					}
 

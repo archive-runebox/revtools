@@ -22,7 +22,7 @@ class Analysis {
 		MethodNode asmNode = method.getAsmNode();
 		if (asmNode == null || (asmNode.access & Opcodes.ACC_ABSTRACT) != 0 || asmNode.instructions.size() == 0) return;
 
-		Logger.INSTANCE.info(method.getDisplayName(NameType.MAPPED_PLAIN, true));
+		Logger.INSTANCE.debug(method.getDisplayName(NameType.MAPPED_PLAIN, true));
 		dump(asmNode);
 
 		StateRecorder rec = new StateRecorder(method, common);
@@ -1110,7 +1110,7 @@ class Analysis {
 
 		lvToVar = null;
 
-		Logger.INSTANCE.info("Local vars raw:");
+		Logger.INSTANCE.debug("Local vars raw:");
 
 		for (int i = 0; i < varCount; i++) {
 			ExecState state = rec.getState(startIndices[i]);
@@ -1221,7 +1221,7 @@ class Analysis {
 			}
 		}
 
-		Logger.INSTANCE.info("Local vars:");
+		Logger.INSTANCE.debug("Local vars:");
 
 		for (int i = 0; i < varCount; i++) {
 			ExecState state = rec.getState(startIndices[i]);
@@ -1248,9 +1248,9 @@ class Analysis {
 			}
 
 			if (!mismatch) {
-				Logger.INSTANCE.info("Existing vars matched!");
+				Logger.INSTANCE.debug("Existing vars matched!");
 			} else {
-				Logger.INSTANCE.info("Existing vars mismatch:");
+				Logger.INSTANCE.debug("Existing vars mismatch:");
 
 				for (int i = 0; i < orig.size(); i++) {
 					LocalVariableNode lvn = orig.get(i);
@@ -1940,7 +1940,7 @@ class Analysis {
 		AbstractInsnNode fieldWrite = null;
 
 		//dump(method.asmNode);
-		//Logger.INSTANCE.info("\n------------------------\n");
+		//Logger.INSTANCE.debug("\n------------------------\n");
 
 		for (Iterator<AbstractInsnNode> it = il.iterator(); it.hasNext(); ) {
 			AbstractInsnNode aInsn = it.next();
@@ -2058,7 +2058,7 @@ class Analysis {
 		/*		int pos = fieldWritePos;
 
 		for (int i = 0; i < 100; i++) {
-			Logger.INSTANCE.info(i+" ("+pos+"):");
+			Logger.INSTANCE.debug(i+" ("+pos+"):");
 
 			Frame<SourceValue> frame = frames[pos];
 			Frame<SourceValue> nextFrame = frames[pos + 1];
@@ -2068,7 +2068,7 @@ class Analysis {
 			SourceValue value = frame.getStack(frame.getStackSize() - 1);
 
 			if (value.insns.isEmpty()) {
-				Logger.INSTANCE.info("empty");
+				Logger.INSTANCE.debug("empty");
 				break;
 			}
 
@@ -2081,11 +2081,11 @@ class Analysis {
 			pos = method.asmNode.instructions.indexOf(value.insns.iterator().next());
 		}*/
 
-		/*Logger.INSTANCE.info(frame);
-		Logger.INSTANCE.info("\n------------------------\n");
+		/*Logger.INSTANCE.debug(frame);
+		Logger.INSTANCE.debug("\n------------------------\n");
 
 		dump(frame.getStack(frame.getStackSize() - 1).insns);*/
-		//Logger.INSTANCE.info();
+		//Logger.INSTANCE.debug();
 	}
 
 	private static int getStackDemand(AbstractInsnNode ain, Frame<?> frame) {
@@ -2352,7 +2352,7 @@ class Analysis {
 			textifier.print(pw);
 		}
 
-		Logger.INSTANCE.info(writer.toString());
+		Logger.INSTANCE.debug(writer.toString());
 	}
 
 	private static void dump(Iterable<AbstractInsnNode> il) {
@@ -2370,6 +2370,6 @@ class Analysis {
 			textifier.print(pw);
 		}
 
-		Logger.INSTANCE.info(writer.toString());
+		Logger.INSTANCE.debug(writer.toString());
 	}
 }

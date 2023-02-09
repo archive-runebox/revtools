@@ -215,7 +215,7 @@ public class ClassFeatureExtractor implements LocalClassEnv {
 
 	private void processMethodInsns(MethodInstance method) {
 		if (!method.isReal()) { // artificial method to capture calls to types with incomplete/unknown hierarchy/super type method info
-			Logger.INSTANCE.info("skipping empty method "+method);
+			Logger.INSTANCE.debug("skipping empty method "+method);
 			return;
 		}
 
@@ -278,7 +278,7 @@ public class ClassFeatureExtractor implements LocalClassEnv {
 							Util.isCallToInterface(impl), impl.getTag() == Opcodes.H_INVOKESTATIC);
 					break;
 				default:
-					Logger.INSTANCE.info("unexpected impl tag: "+impl.getTag());
+					Logger.INSTANCE.debug("unexpected impl tag: "+impl.getTag());
 				}
 
 				break;
