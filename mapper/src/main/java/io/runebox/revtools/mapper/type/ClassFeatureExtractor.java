@@ -6,6 +6,7 @@ import io.runebox.revtools.mapper.type.Analysis.CommonClasses;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
+import org.tinylog.kotlin.Logger;
 
 import java.net.URI;
 import java.nio.file.FileSystem;

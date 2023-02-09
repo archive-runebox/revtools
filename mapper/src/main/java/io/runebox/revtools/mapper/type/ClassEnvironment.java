@@ -5,7 +5,6 @@ import io.runebox.revtools.mapper.Util;
 import io.runebox.revtools.mapper.classifier.ClassifierUtil;
 import io.runebox.revtools.mapper.classifier.MatchingCache;
 import io.runebox.revtools.mapper.config.ProjectConfig;
-import io.runebox.revtools.mapper.srcprocess.Decompiler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -316,20 +315,6 @@ public final class ClassEnvironment implements ClassEnv {
 
 	public Collection<InputFile> getInputFilesB() {
 		return extractorB.getInputFiles();
-	}
-
-	public String decompile(Decompiler decompiler, ClassInstance cls, NameType nameType) {
-		ClassFeatureExtractor extractor;
-
-		if (extractorA.getLocalClsById(cls.getId()) == cls) {
-			extractor = extractorA;
-		} else if (extractorB.getLocalClsById(cls.getId()) == cls) {
-			extractor = extractorB;
-		} else {
-			throw new IllegalArgumentException("unknown class: "+cls);
-		}
-
-		return decompiler.decompile(cls, extractor, nameType);
 	}
 
 	@Override

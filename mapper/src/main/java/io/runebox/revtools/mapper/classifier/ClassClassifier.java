@@ -1,6 +1,7 @@
 package io.runebox.revtools.mapper.classifier;
 
 import io.runebox.revtools.mapper.Main;
+import io.runebox.revtools.mapper.Mapper;
 import io.runebox.revtools.mapper.Util;
 import io.runebox.revtools.mapper.type.*;
 import io.runebox.revtools.mapper.type.Signature.ClassSignature;
@@ -419,7 +420,7 @@ public class ClassClassifier {
 					if (!method.isMatchable()) continue;
 
 					List<RankResult<MethodInstance>> ranking = MethodClassifier.rank(method, clsB.getMethods(), level, env);
-					if (Main.checkRank(ranking, absThreshold, relThreshold, maxScore)) match += Main.getScore(ranking.get(0).getScore(), maxScore);
+					if (Mapper.checkRank(ranking, absThreshold, relThreshold, maxScore)) match += Mapper.getScore(ranking.get(0).getScore(), maxScore);
 				}
 			}
 
@@ -430,7 +431,7 @@ public class ClassClassifier {
 					if (!field.isMatchable()) continue;
 
 					List<RankResult<FieldInstance>> ranking = FieldClassifier.rank(field, clsB.getFields(), level, env);
-					if (Main.checkRank(ranking, absThreshold, relThreshold, maxScore)) match += Main.getScore(ranking.get(0).getScore(), maxScore);
+					if (Mapper.checkRank(ranking, absThreshold, relThreshold, maxScore)) match += Mapper.getScore(ranking.get(0).getScore(), maxScore);
 				}
 			}
 

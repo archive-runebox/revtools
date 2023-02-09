@@ -9,6 +9,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
+import org.tinylog.kotlin.Logger;
 
 import java.util.*;
 import java.util.function.*;
